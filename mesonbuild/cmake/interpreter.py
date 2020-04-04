@@ -24,7 +24,7 @@ from .executor import CMakeExecutor
 from .traceparser import CMakeTraceParser, CMakeGeneratorTarget
 from .. import mlog
 from ..environment import Environment
-from ..mesonlib import MachineChoice, OrderedSet, version_compare
+from ..mesonlib import MachineChoice, OrderedSet, version_compare, relpath, commonpath
 from ..compilers.compilers import lang_suffixes, header_suffixes, obj_suffixes, lib_suffixes, is_header
 from enum import Enum
 from functools import lru_cache
@@ -192,7 +192,7 @@ class OutputTargetMap:
     # Utility functions to generate local keys
     def _rel_path(self, fname: str) -> T.Optional[str]:
         fname = os.path.normpath(os.path.join(self.build_dir, fname))
-        if os.path.commonpath([self.build_dir, fname]) != self.build_dir:
+        if commonpath([self.build_dir, fname]) != self.build_dir:
             return None
         return os.path.relpath(fname, self.build_dir)
 
@@ -866,7 +866,7 @@ class CMakeInterpreter:
             # Load the buildsystem file list
             cmake_files = self.fileapi.get_cmake_sources()
             self.bs_files = [x.file for x in cmake_files if not x.is_cmake and not x.is_temp]
-            self.bs_files = [os.path.relpath(x, self.env.get_source_dir()) for x in self.bs_files]
+            self.bs_files = [relpath(x, self.env.get_source_dir()) for x in self.bs_files]
             self.bs_files = list(OrderedSet(self.bs_files))
 
             # Load the codemodel configurations

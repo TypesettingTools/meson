@@ -1533,6 +1533,10 @@ def relpath(path: str, start: str) -> str:
     except (TypeError, ValueError):
         return path
 
+def commonpath(paths: T.Sequence[str]) -> str:
+    if len(set([os.path.splitdrive(p)[0] for p in paths])) > 1:
+        return ''
+    return os.path.commonpath(paths)
 
 class LibType(Enum):
 
